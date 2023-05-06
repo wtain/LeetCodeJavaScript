@@ -65,14 +65,31 @@ console.log(counter()); // 11
 console.log(counter()); // 12
 
 
-// {
-//     n = 10,
-//     ["call","call","call"],
-//     [10,11,12],
-// }
-//
-// {
-//     n = -2,
-//     ["call","call","call","call","call"],
-//     [-2,-1,0,1,2],
-// }
+test1 = {
+    initParams: 10,
+    inputs: ["call","call","call"],
+    outputs: [10,11,12],
+}
+
+test2 = {
+    initParams: -2,
+    inputs: ["call","call","call","call","call"],
+    outputs: [-2,-1,0,1,2],
+}
+
+function run_test(func, test) {
+    let obj = func(test.initParams);
+    n = test.inputs.length;
+    for (var i = 0; i < n; i++) {
+        result = obj[test.inputs[i]]()
+        if (result === test.outputs[i]) {
+            console.log('Passed');
+        } else {
+            console.log('Failed');
+        }
+    }
+}
+
+run_test(createCounter, test1);
+run_test(createCounter, test2);
+
