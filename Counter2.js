@@ -36,6 +36,8 @@ Constraints:
 total calls not to exceed 1000
 */
 
+import { run_suite } from './common/TestingUtils.js'
+
 /**
  * @param {integer} init
  * @return { increment: Function, decrement: Function, reset: Function }
@@ -81,7 +83,23 @@ total calls not to exceed 1000
  * counter.decrement(); // 4
  */
 
- const counter = createCounter(5)
- console.log(counter.increment()); // 6
- console.log(counter.reset()); // 5
- console.log(counter.decrement()); // 4
+// const counter = createCounter(5)
+// console.log(counter.increment()); // 6
+// console.log(counter.reset()); // 5
+// console.log(counter.decrement()); // 4
+
+
+ const tests = [
+    {
+        initParams: 5,
+        inputs: ["increment","reset","decrement"],
+        outputs: [6,5,4]
+    },
+    {
+        initParams: 0,
+        inputs: ["increment","increment","decrement","reset","reset"],
+        outputs: [1,2,1,0,0]
+    }
+ ]
+
+ run_suite(createCounter, tests);

@@ -35,6 +35,8 @@ At most 1000 calls to counter() will be made
  * @return {Function} counter
  */
 
+ import { run_test, run_suite } from './common/TestingUtils.js'
+
 /* Runtime
    69 ms
    Beats
@@ -46,7 +48,7 @@ At most 1000 calls to counter() will be made
 var createCounter = function(n) {
     let v = n
     return function() {
-        rv = v;
+        let rv = v;
         v += 1
         return rv
     };
@@ -59,37 +61,32 @@ var createCounter = function(n) {
  * counter() // 12
  */
 
-const counter = createCounter(10);
-console.log(counter()); // 10
-console.log(counter()); // 11
-console.log(counter()); // 12
 
 
-test1 = {
+//const counter = createCounter(10);
+//console.log(counter()); // 10
+//console.log(counter()); // 11
+//console.log(counter()); // 12
+
+
+const test1 = {
     initParams: 10,
     inputs: ["call","call","call"],
     outputs: [10,11,12],
 }
 
-test2 = {
+const test2 = {
     initParams: -2,
     inputs: ["call","call","call","call","call"],
     outputs: [-2,-1,0,1,2],
 }
 
-function run_test(func, test) {
-    let obj = func(test.initParams);
-    n = test.inputs.length;
-    for (var i = 0; i < n; i++) {
-        result = obj[test.inputs[i]]()
-        if (result === test.outputs[i]) {
-            console.log('Passed');
-        } else {
-            console.log('Failed');
-        }
-    }
-}
+const tests = [
+    test1, test2
+]
 
-run_test(createCounter, test1);
-run_test(createCounter, test2);
+run_suite(createCounter, tests);
+
+//run_test(createCounter, test1);
+//run_test(createCounter, test2);
 

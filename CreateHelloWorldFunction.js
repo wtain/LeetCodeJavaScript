@@ -29,6 +29,7 @@ Constraints:
 0 <= args.length <= 10
 */
 
+import { run_functional_tests } from './common/TestingUtils.js'
 
 /*
 Runtime
@@ -56,6 +57,16 @@ var createHelloWorld = function() {
  * f(); // "Hello World"
  */
 
- const f = createHelloWorld();
- f(); // "Hello World"
- console.log(f());
+// const f = createHelloWorld();
+// f(); // "Hello World"
+// console.log(f());
+
+
+const tests = [
+    {
+        input: [],
+        output: "Hello World"
+    }
+];
+
+run_functional_tests(createHelloWorld, tests);
