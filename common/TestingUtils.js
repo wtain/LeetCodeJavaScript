@@ -23,13 +23,19 @@ export function run_suite(func, tests) {
      });
 }
 
-export function run_functional_tests(func, tests) {
-    const fun = func();
+export function run_simple_tests(fun, tests) {
     tests.forEach((test, index) => {
         console.log(`Running test ${(index+1)}`);
         const input = test.input;
         const output = test.output;
-        const result = fun(input);
+        const result = fun(...input);
+        console.log(`Expected: ${output}`);
+        console.log(`Output: ${result}`);
         perform_test(result, output)
      });
+}
+
+export function run_functional_tests(func, tests) {
+    const fun = func();
+    run_simple_tests(fun, tests);
 }
