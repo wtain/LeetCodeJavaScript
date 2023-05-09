@@ -1,6 +1,30 @@
 
+function compare(a, b) {
+    if (a === b) {
+        return true;
+    }
+    if (a === null && b === null) {
+        return true;
+    }
+    if (a === null || b === null) {
+        return false;
+    }
+    if (Array.isArray(a)) {   
+        if (a.length !== b.length) {
+            return false;
+        }
+        for (var i = 0; i < a.length; ++i) {
+            if (!compare(a[i], b[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return a === b;
+}
+
 function perform_test(result, expectedResult) {
-    if (result === expectedResult) {
+    if (compare(result, expectedResult)) {
         console.log('Passed');
     } else {
         console.log('Failed');
