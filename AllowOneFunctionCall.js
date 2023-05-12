@@ -83,13 +83,21 @@ const tests = [
 ];
 
 tests.forEach(test => {
-    var f = once(test.initParams);
-    test.calls.forEach(call => {
+    var f = once(...test.initParams);
+    test.calls.forEach((call, index) => {
         var result = f(...call);
+        if (index === 0) {
+            if (result === test.output.value) {
+                console.log('PASSED');
+            } else { 
+                console.log('FAILED');
+            }
+        } else {
+            if (typeof result === 'undefined') {
+                console.log('PASSED');
+            } else { 
+                console.log('FAILED');
+            }
+        }
     });
-    if (result === test.output) {
-        console.log('PASSED');
-    } else { 
-        console.log('FAILED');
-    }
 });
