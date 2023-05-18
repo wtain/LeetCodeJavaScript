@@ -23,7 +23,7 @@ function compare(a, b) {
     return a === b;
 }
 
-function perform_test(result, expectedResult) {
+export function perform_test(result, expectedResult) {
     if (compare(result, expectedResult)) {
         console.log('Passed');
     } else {
