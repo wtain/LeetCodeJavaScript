@@ -295,61 +295,160 @@ Beats
 81.6%
 */
 // https://leetcode.com/problems/array-of-objects-to-matrix/editorial/?utm_campaign=DailyD19&utm_medium=Email&utm_source=Daily&gio_link_id=QPDw0JVR
-var jsonToMatrix = function(arr) {
-    const colMap = new Map();
-    const res = [[]];
+// var jsonToMatrix = function(arr) {
+//     const colMap = new Map();
+//     const res = [[]];
 
-    const sortCols = (matrix) => {
-        const sortedColNames = matrix[0].slice().sort((a, b) => a.localeCompare(b));
+//     const sortCols = (matrix) => {
+//         const sortedColNames = matrix[0].slice().sort((a, b) => a.localeCompare(b));
 
-        const sortedMatrix = matrix.map((row) => {
-            const sortedRow = [];
-            for (let i = 0; i < sortedColNames.length; ++i) {
-                const colIndex = matrix[0].indexOf(sortedColNames[i]);
-                sortedRow.push(row[colIndex]);
-            }
-            return sortedRow;
-        });
+//         const sortedMatrix = matrix.map((row) => {
+//             const sortedRow = [];
+//             for (let i = 0; i < sortedColNames.length; ++i) {
+//                 const colIndex = matrix[0].indexOf(sortedColNames[i]);
+//                 sortedRow.push(row[colIndex]);
+//             }
+//             return sortedRow;
+//         });
 
-        return sortedMatrix;
-    };
+//         return sortedMatrix;
+//     };
 
-    for (let i = 0; i < arr.length; ++i) {
-        const stack = [[arr[i], []]];
-        res.push(Array(colMap.size).fill(''));
+//     for (let i = 0; i < arr.length; ++i) {
+//         const stack = [[arr[i], []]];
+//         res.push(Array(colMap.size).fill(''));
 
-        while (stack.length > 0) {
-            const [front, path] = stack.pop();
+//         while (stack.length > 0) {
+//             const [front, path] = stack.pop();
             
-            if (typeof front === 'object' && front !== null) {
-                const keys = Object.keys(front);
+//             if (typeof front === 'object' && front !== null) {
+//                 const keys = Object.keys(front);
 
-                for (let j = keys.length-1; j >= 0; --j) {
-                    stack.push([front[keys[j]], path.concat(keys[j])]);
-                }
-            } else if (Array.isArray(front)) {
-                for (let j = front.length-1; j >= 0; --j) {
-                    stack.push([front[j], path.concat(j)]);
-                }
+//                 for (let j = keys.length-1; j >= 0; --j) {
+//                     stack.push([front[keys[j]], path.concat(keys[j])]);
+//                 }
+//             } else if (Array.isArray(front)) {
+//                 for (let j = front.length-1; j >= 0; --j) {
+//                     stack.push([front[j], path.concat(j)]);
+//                 }
+//             } else {
+//                 let pathStr = path.join('.');
+
+//                 if (!colMap.has(pathStr)) {
+//                     res[0].push(pathStr);
+//                     colMap.set(pathStr, res[0].length - 1);
+
+//                     for (let j = 1; j < res.length; ++j) {
+//                         res[j][res[0].length-1] = '';
+//                     }
+//                 }
+
+//                 let j = colMap.get(pathStr);
+//                 res[i+1][j] = front;
+//             }
+//         }
+//     }
+
+//     return sortCols(res);
+// };
+
+
+/**
+ * Runtime
+566 ms
+Beats
+40.53%
+Memory
+112.8 MB
+Beats
+37.87%
+ */
+// https://leetcode.com/problems/array-of-objects-to-matrix/editorial/?utm_campaign=DailyD19&utm_medium=Email&utm_source=Daily&gio_link_id=QPDw0JVR
+// const flattenBacktracking = (ele, path, object, columns) => {
+//     if (ele != null && typeof ele == 'object') {
+//         Object.entries(ele).forEach(([key, value]) => 
+//             flattenBacktracking(value, path + (path ? "." : "") + key, object, columns));
+//     } else {
+//         object[path] = ele;
+//         columns.add(path);
+//     }
+//     return object;
+// };
+
+// var jsonToMatrix = function(arr) {
+//     const matrix = [];
+//     const columns = new Set();
+
+//     arr = arr.map((ele) => flattenBacktracking(ele, "", {}, columns));
+//     matrix.push([...columns].sort());
+
+//     const columnIdx = matrix[0].reduce(
+//         (acc, cur, idx) => ((acc[cur] = idx), acc), 
+//         {}
+//     );
+
+//     arr.forEach((ele) => {
+//         matrix.push(Array(columns.size).fill(''));
+//         Object.entries(ele).forEach(([key, value]) => (matrix.at(-1)[columnIdx[key]] = value))
+//     });
+
+//     return matrix;
+// };
+
+
+/**
+ * Runtime
+449 ms
+Beats
+64.78%
+Memory
+116.7 MB
+Beats
+24.92%
+ */
+// https://leetcode.com/problems/array-of-objects-to-matrix/editorial/?utm_campaign=DailyD19&utm_medium=Email&utm_source=Daily&gio_link_id=QPDw0JVR
+function* getNestedColumn(obj, prefixes = []) {
+    if (obj != null && Array.isArray(obj)) {
+        for (let key = 0; key < obj.length; key ++) {
+            prefixes.push(key);
+            yield* getNestedColumn(obj[key], prefixes);
+            prefixes.pop();
+        }
+    } else if (obj != null && typeof obj === 'object') {
+        for (const key of Object.keys(obj)) {
+            prefixes.push(key);
+            yield* getNestedColumn(obj[key], prefixes);
+            prefixes.pop();
+        }
+    } else if (prefixes.length > 0) {
+        yield [prefixes.join('.'), obj];
+    }
+};
+
+var jsonToMatrix = function(arr) {
+    const output = new Array(arr.length+1).fill(null).map(() => []);
+    const rows = new Array(arr.length).fill(null).map(() => new Map());
+    const uniqueColumns = new Set();
+    for (let row = 0; row < arr.length; row ++) {
+        for (const [key, value] of getNestedColumn(arr[row])) {
+            rows[row].set(key, value);
+            uniqueColumns.add(key);
+        }
+    }
+
+    const columns = [...uniqueColumns].sort();
+    output[0] = columns;
+    for (let row = 0; row < arr.length; row ++) {
+        for (const col of columns) {
+            if (rows[row].has(col)) {
+                output[row+1].push(rows[row].get(col));
             } else {
-                let pathStr = path.join('.');
-
-                if (!colMap.has(pathStr)) {
-                    res[0].push(pathStr);
-                    colMap.set(pathStr, res[0].length - 1);
-
-                    for (let j = 1; j < res.length; ++j) {
-                        res[j][res[0].length-1] = '';
-                    }
-                }
-
-                let j = colMap.get(pathStr);
-                res[i+1][j] = front;
+                output[row+1].push('');
             }
         }
     }
 
-    return sortCols(res);
+    return output;
 };
 
 const tests = [
