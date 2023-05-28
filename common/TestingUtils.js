@@ -20,6 +20,12 @@ function compare(a, b) {
         }
         return true;
     }
+    if (typeof a !== typeof b) {
+        return false;
+    }
+    if (typeof a === 'object') {
+        return JSON.stringify(a) === JSON.stringify(b);
+    }
     return a === b;
 }
 
